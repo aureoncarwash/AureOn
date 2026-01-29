@@ -1180,27 +1180,27 @@ select:focus, input:focus, textarea:focus{
 
 /* Ejemplo 1 */
 .gallery .ph:nth-child(1) .ph__img {
-  background-image: url("img/hero1.HEIC");
+  background-image: url("img/hero1.jpg");
 }
 
 /* Ejemplo 2 */
 .gallery .ph:nth-child(2) .ph__img {
-  background-image: url("img/ktm1.HEIC");
+  background-image: url("img/ktm1.jpg");
 }
 
 /* Ejemplo 3 */
 .gallery .ph:nth-child(3) .ph__img {
-  background-image: url("img/vento1.HEIC");
+  background-image: url("img/vento1.jpg");
 }
 
 /* Ejemplo 4 */
 .gallery .ph:nth-child(4) .ph__img {
-  background-image: url("img/yamaha1.HEIC");
+  background-image: url("img/yamaha1.jpg");
 }
 
 /* Foto Hero (si ya tienes imagen) */
 .hero__mock .mock__frame {
-  background-image: url("img/auto1.HEIC");
+  background-image: url("img/auto1.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
