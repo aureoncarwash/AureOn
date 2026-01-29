@@ -360,29 +360,43 @@ mountApp().catch((err) => {
   const topBar = document.getElementById("mobileTopBar");
   if (!topBar) return;
 
-  let lastScrollY = window.scrollY;
+  const isMobile = () => window.matchMedia("(max-width: 900px)").matches;
+
+  let lastY = window.scrollY;
   let ticking = false;
 
-  function onScroll() {
-    const currentScrollY = window.scrollY;
+  function handleScroll() {
+    if (!isMobile()) {
+      topBar.classList.remove("is-hidden");
+      lastY = window.scrollY;
+      ticking = false;
+      return;
+    }
 
-    // Scroll hacia abajo → ocultar
-    if (currentScrollY > lastScrollY && currentScrollY > 80) {
+    const y = window.scrollY;
+
+    // baja => oculta (cuando ya bajó un poco)
+    if (y > lastY && y > 80) {
       topBar.classList.add("is-hidden");
     }
-    // Scroll hacia arriba → mostrar
-    else if (currentScrollY < lastScrollY) {
+    // sube => muestra
+    if (y < lastY) {
       topBar.classList.remove("is-hidden");
     }
 
-    lastScrollY = currentScrollY;
+    lastY = y;
     ticking = false;
   }
 
   window.addEventListener("scroll", () => {
     if (!ticking) {
-      window.requestAnimationFrame(onScroll);
+      window.requestAnimationFrame(handleScroll);
       ticking = true;
     }
+  });
+
+  // Si cambia el tamaño (rotación / resize), corrige estado
+  window.addEventListener("resize", () => {
+    if (!isMobile()) topBar.classList.remove("is-hidden");
   });
 })();

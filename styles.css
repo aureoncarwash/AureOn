@@ -1214,16 +1214,29 @@ select:focus, input:focus, textarea:focus{
   display: none;
 }
 
+/* Solo en móvil: ocultar/mostrar barra superior al hacer scroll */
+@media (max-width: 900px){
+  #mobileTopBar{
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    transition: transform .28s ease, opacity .28s ease;
+    will-change: transform, opacity;
+  }
 
-.mobileTopBar {
-  position: sticky;
-  top: 0;
-  z-index: 999;
-  transition: transform 0.35s ease, opacity 0.35s ease;
+  #mobileTopBar.is-hidden{
+    transform: translateY(-120%);
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
-/* Cuando se oculta */
-.mobileTopBar.is-hidden {
-  transform: translateY(-110%);
-  opacity: 0;
+/* En PC nunca se oculta */
+@media (min-width: 901px){
+  #mobileTopBar{
+    transform: none !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
 }
+
