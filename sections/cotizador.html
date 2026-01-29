@@ -1,0 +1,166 @@
+<!-- sections/cotizador.html (COMPLETO) -->
+<section class="quote" id="cotizador">
+  <div class="container quote__grid">
+    <div class="quote__info">
+      <h2 class="section__title">Cotiza en menos de 1 minuto</h2>
+      <p class="section__subtitle">
+        Selecciona vehículo, paquete, suciedad y extras. Te mostramos el total y lo enviamos por WhatsApp para agendar.
+      </p>
+
+      <div class="quote__bullets">
+        <div class="bullet">
+          <div class="bullet__icon">✅</div>
+          <div class="bullet__txt">Total al instante</div>
+        </div>
+        <div class="bullet">
+          <div class="bullet__icon">✅</div>
+          <div class="bullet__txt">Se envía con detalle</div>
+        </div>
+        <div class="bullet">
+          <div class="bullet__icon">✅</div>
+          <div class="bullet__txt">Sin llamadas</div>
+        </div>
+      </div>
+
+      <!-- RESUMEN (se actualiza con JS) -->
+      <div class="noteBox" style="margin-top:14px">
+        <p style="margin:0 0 10px 0"><strong>Resumen</strong></p>
+
+        <div class="pricebox" style="margin:0">
+          <div class="pricebox__head">Total estimado</div>
+
+          <div class="pricegrid">
+            <div class="pricegrid__label">Total</div>
+            <div class="pricegrid__vals">
+              <span><strong id="quoteTotal">$0</strong></span>
+            </div>
+
+            <div class="pricegrid__label">Detalle</div>
+            <div class="pricegrid__vals">
+              <span id="quoteBreakdown" style="color:rgba(255,255,255,0.72); font-size:13px; line-height:1.45">
+                Selecciona opciones para ver el desglose.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <p style="margin:10px 0 0 0; color:rgba(255,255,255,0.62); font-size:12px; line-height:1.45">
+          Nota: Área extendida se confirma por WhatsApp (no se suma aquí).
+        </p>
+      </div>
+    </div>
+
+    <form class="quote__form" id="quoteForm">
+      <!-- Vehículo -->
+      <div class="form__row">
+        <label for="vehiculo">Tipo de vehículo</label>
+        <select id="vehiculo" name="vehiculo" required>
+          <option value="" selected disabled>Selecciona una opción</option>
+          <option value="Auto">Auto</option>
+          <option value="Camioneta">Camioneta</option>
+          <option value="Suburban">Suburban / SUV grande</option>
+        </select>
+      </div>
+
+      <!-- Paquete -->
+      <div class="form__row">
+        <label for="paquete">Paquete</label>
+        <select id="paquete" name="paquete" required>
+          <option value="" selected disabled>Selecciona una opción</option>
+          <option value="Essential">Essential (A domicilio)</option>
+          <option value="Prime">Prime (A domicilio)</option>
+          <option value="Deluxe">Deluxe (A domicilio)</option>
+        </select>
+      </div>
+
+      <!-- Suciedad -->
+      <div class="form__row">
+        <label for="suciedad">Nivel de suciedad</label>
+        <select id="suciedad" name="suciedad" required>
+          <option value="" selected disabled>Selecciona una opción</option>
+          <option value="Base">Base</option>
+          <option value="Media">Media (+$150)</option>
+          <option value="Alta">Alta (+$300)</option>
+        </select>
+      </div>
+
+      <!-- Pago -->
+      <div class="form__row">
+        <label for="pago">Método de pago</label>
+        <select id="pago" name="pago" required>
+          <option value="" selected disabled>Selecciona una opción</option>
+          <option value="Tarjeta">Tarjeta / transferencia</option>
+          <option value="Efectivo">Efectivo (10% desc.)</option>
+        </select>
+      </div>
+
+      <!-- Extras -->
+      <div class="form__row">
+        <label>Extras (opcional)</label>
+
+        <div class="noteBox" style="margin:0">
+          <div class="extrasGrid">
+          
+            <!-- Pelo mascota -->
+            <div class="extraItem">
+              <span style="width:18px;height:18px;display:block;"></span>
+              <div>
+                <div class="extraItem__title">Pelo de mascota</div>
+                <div class="extraItem__sub">Selecciona el nivel (si aplica).</div>
+
+                <div class="radioRow">
+                  <label class="radioOpt">
+                    <input type="radio" name="peloMascota" value="Ninguno" checked />
+                    Ninguno
+                  </label>
+
+                  <label class="radioOpt">
+                    <input type="radio" name="peloMascota" value="Moderado" />
+                    Moderado (+$150)
+                  </label>
+
+                  <label class="radioOpt">
+                    <input type="radio" name="peloMascota" value="Excesivo" />
+                    Excesivo (+$200)
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Área extendida -->
+            <div class="extraItem">
+              <input type="checkbox" id="extraZona" />
+              <div>
+                <div class="extraItem__title">Área extendida</div>
+                <div class="extraItem__sub">Se confirma por WhatsApp según ubicación (no se suma aquí).</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zona / nota -->
+      <div class="form__row">
+        <label for="zona">Zona / Colonia (opcional)</label>
+        <input id="zona" name="zona" type="text" placeholder="Ej. Jiutepec, Civac, Temixco..." />
+      </div>
+
+      <div class="form__row">
+        <label for="nota">Notas (opcional)</label>
+        <textarea id="nota" name="nota" rows="3"
+          placeholder="Ej. Manchas en asientos, detalles específicos, etc."></textarea>
+      </div>
+
+      <div class="form__actions">
+        <button class="btn btn--primary btn--full" type="submit" id="sendQuote">
+          Enviar cotización por WhatsApp
+        </button>
+
+        <p class="form__small">
+          <span class="small__dot"></span>
+          El total mostrado es estimado; se confirma al agendar.
+        </p>
+      </div>
+    </form>
+  </div>
+</section>
