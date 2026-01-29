@@ -1213,3 +1213,17 @@ select:focus, input:focus, textarea:focus{
 .hero__mock .mock__label {
   display: none;
 }
+
+
+.mobileTopBar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+/* Cuando se oculta */
+.mobileTopBar.is-hidden {
+  transform: translateY(-110%);
+  opacity: 0;
+}

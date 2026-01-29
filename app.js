@@ -355,3 +355,34 @@ mountApp().catch((err) => {
       </div>`;
   }
 });
+
+(function () {
+  const topBar = document.getElementById("mobileTopBar");
+  if (!topBar) return;
+
+  let lastScrollY = window.scrollY;
+  let ticking = false;
+
+  function onScroll() {
+    const currentScrollY = window.scrollY;
+
+    // Scroll hacia abajo → ocultar
+    if (currentScrollY > lastScrollY && currentScrollY > 80) {
+      topBar.classList.add("is-hidden");
+    }
+    // Scroll hacia arriba → mostrar
+    else if (currentScrollY < lastScrollY) {
+      topBar.classList.remove("is-hidden");
+    }
+
+    lastScrollY = currentScrollY;
+    ticking = false;
+  }
+
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      window.requestAnimationFrame(onScroll);
+      ticking = true;
+    }
+  });
+})();
