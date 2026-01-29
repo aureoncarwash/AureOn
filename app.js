@@ -5,16 +5,14 @@
    - Maps con coordenadas exactas
    - Elegir paquete -> autollenar cotizador (Essential/Prime/Deluxe)
    - Cotizador funcional (total + WhatsApp)
-   - Menú móvil
-   - Año footer
+   - Menú móvil (burger + auto-hide solo en móvil)
 ========================= */
 
 /* =========================
    CONFIG
 ========================= */
 
-// PON TU NÚMERO AQUÍ (formato internacional, sin +, sin espacios)
-// Ejemplo México: 52 + 10 dígitos => "521234567890"
+// Número WhatsApp (formato internacional, sin +, sin espacios)
 const WHATSAPP_NUMBER = "525639005947";
 
 // Coordenadas exactas del punto físico
@@ -119,7 +117,6 @@ async function mountApp() {
   }
 
   app.innerHTML = html.join("\n");
-
   initAfterLoad();
 }
 
@@ -147,7 +144,7 @@ function computeQuote() {
     if (!canAsientos) extraAsientos.checked = false;
   }
 
-  // Si faltan campos todavía, muestra placeholder
+  // Si faltan campos todavía
   if (!vehiculo || !paquete || !suciedad || !pago) {
     if (totalEl) totalEl.textContent = "$0";
     if (breakdownEl) breakdownEl.textContent = "Selecciona opciones para ver el desglose.";
@@ -190,13 +187,10 @@ function computeQuote() {
     paquete,
     suciedad,
     pago,
-    base,
-    dirtAdd,
+    total,
     asientosAdd,
     peloMascota,
-    peloAdd,
-    zonaFlag,
-    total,
+    zonaFlag
   };
 }
 
@@ -206,8 +200,9 @@ function wireQuoteEvents() {
     const el = document.getElementById(id);
     if (!el) return;
 
-    if (el.tagName === "SELECT") el.addEventListener("change", computeQuote);
-    if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+    const t = el.tagName;
+    if (t === "SELECT") el.addEventListener("change", computeQuote);
+    if (t === "INPUT" || t === "TEXTAREA") {
       el.addEventListener("change", computeQuote);
       el.addEventListener("input", computeQuote);
     }
@@ -236,11 +231,6 @@ function wireQuoteSubmit() {
     const zona = document.getElementById("zona")?.value?.trim() || "";
     const nota = document.getElementById("nota")?.value?.trim() || "";
 
-    const paqueteLabel =
-      data.paquete === "Essential" ? "Essential" :
-      data.paquete === "Prime" ? "Prime" :
-      "Deluxe";
-
     const extrasTxt = [];
     if (data.asientosAdd > 0) extrasTxt.push("Retiro de asientos (+$100)");
     if (data.peloMascota === "Moderado") extrasTxt.push("Pelo de mascota moderado (+$150)");
@@ -252,7 +242,7 @@ function wireQuoteSubmit() {
     let message =
       "Hola, quiero agendar un servicio a domicilio con AureOn.\n\n" +
       `• Vehículo: ${data.vehiculo}\n` +
-      `• Paquete: ${paqueteLabel} (A domicilio)\n` +
+      `• Paquete: ${data.paquete} (A domicilio)\n` +
       `• Suciedad: ${data.suciedad}\n` +
       `• Pago: ${data.pago}\n` +
       `• Extras: ${extrasLine}\n` +
@@ -264,6 +254,76 @@ function wireQuoteSubmit() {
     message += "\n¿Me confirmas disponibilidad y horario para agendar?";
 
     window.open(buildWhatsAppLink(message), "_blank", "noopener");
+  });
+}
+
+/* =========================
+   MENÚ MÓVIL (BURGER + AUTOHIDE SOLO MÓVIL)
+========================= */
+
+function initMobileNav() {
+  const mq = window.matchMedia("(max-width: 900px)");
+  const burger = document.querySelector(".nav__burger");
+  const mobileBar = document.getElementById("mobileTopBar");
+  if (!burger || !mobileBar) return;
+
+  // Estado inicial (cerrado)
+  burger.setAttribute("aria-expanded", "false");
+  mobileBar.classList.remove("is-open", "is-hidden");
+
+  const setOpen = (isOpen) => {
+    burger.setAttribute("aria-expanded", String(isOpen));
+    mobileBar.classList.toggle("is-open", isOpen);
+    if (!isOpen) mobileBar.classList.remove("is-hidden");
+  };
+
+  burger.addEventListener("click", () => {
+    if (!mq.matches) return;
+    const openNow = burger.getAttribute("aria-expanded") === "true";
+    setOpen(!openNow);
+  });
+
+  // Cerrar al dar click en un link
+  mobileBar.querySelectorAll("a").forEach((a) => {
+    a.addEventListener("click", () => setOpen(false));
+  });
+
+  // Escape cierra
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setOpen(false);
+  });
+
+  // Autohide (solo si está abierto)
+  let lastY = window.scrollY;
+  let ticking = false;
+
+  const onScroll = () => {
+    if (!mq.matches) return;
+
+    const isOpen = mobileBar.classList.contains("is-open");
+    if (!isOpen) { ticking = false; return; }
+
+    const y = window.scrollY;
+    const diff = y - lastY;
+
+    if (diff > 10 && y > 80) mobileBar.classList.add("is-hidden"); // baja
+    if (diff < -10) mobileBar.classList.remove("is-hidden");       // sube
+
+    lastY = y;
+    ticking = false;
+  };
+
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      requestAnimationFrame(onScroll);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // Si pasas a PC: reset
+  mq.addEventListener?.("change", () => {
+    setOpen(false);
+    lastY = window.scrollY;
   });
 }
 
@@ -286,11 +346,9 @@ function initAfterLoad() {
 
   // Maps link exacto
   const mapsLink = document.getElementById("mapsLink");
-  if (mapsLink) {
-    mapsLink.href = `https://www.google.com/maps?q=${PHYSICAL_LAT},${PHYSICAL_LNG}`;
-  }
+  if (mapsLink) mapsLink.href = `https://www.google.com/maps?q=${PHYSICAL_LAT},${PHYSICAL_LNG}`;
 
-  // Botones "Elegir paquete" (deben tener data-pack="Essential|Prime|Deluxe")
+  // Elegir paquete
   const selectPaquete = document.getElementById("paquete");
   document.querySelectorAll(".js-pick").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -303,30 +361,8 @@ function initAfterLoad() {
     });
   });
 
-  // Menú móvil
-  const burger = document.querySelector(".nav__burger");
-  const mobileMenu = document.querySelector(".navmobile");
-  if (burger && mobileMenu) {
-    const setOpen = (isOpen) => {
-      burger.setAttribute("aria-expanded", String(isOpen));
-      mobileMenu.hidden = !isOpen;
-    };
-
-    setOpen(false);
-
-    burger.addEventListener("click", () => {
-      const openNow = burger.getAttribute("aria-expanded") === "true";
-      setOpen(!openNow);
-    });
-
-    mobileMenu.querySelectorAll("a").forEach((a) => {
-      a.addEventListener("click", () => setOpen(false));
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") setOpen(false);
-    });
-  }
+  // Menú móvil (nuevo)
+  initMobileNav();
 
   // Cotizador
   wireQuoteEvents();
@@ -355,48 +391,3 @@ mountApp().catch((err) => {
       </div>`;
   }
 });
-
-(function () {
-  const topBar = document.getElementById("mobileTopBar");
-  if (!topBar) return;
-
-  const isMobile = () => window.matchMedia("(max-width: 900px)").matches;
-
-  let lastY = window.scrollY;
-  let ticking = false;
-
-  function handleScroll() {
-    if (!isMobile()) {
-      topBar.classList.remove("is-hidden");
-      lastY = window.scrollY;
-      ticking = false;
-      return;
-    }
-
-    const y = window.scrollY;
-
-    // baja => oculta (cuando ya bajó un poco)
-    if (y > lastY && y > 80) {
-      topBar.classList.add("is-hidden");
-    }
-    // sube => muestra
-    if (y < lastY) {
-      topBar.classList.remove("is-hidden");
-    }
-
-    lastY = y;
-    ticking = false;
-  }
-
-  window.addEventListener("scroll", () => {
-    if (!ticking) {
-      window.requestAnimationFrame(handleScroll);
-      ticking = true;
-    }
-  });
-
-  // Si cambia el tamaño (rotación / resize), corrige estado
-  window.addEventListener("resize", () => {
-    if (!isMobile()) topBar.classList.remove("is-hidden");
-  });
-})();
